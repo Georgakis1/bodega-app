@@ -31,35 +31,40 @@ class BodegaController
         $bodegas = $bodegaModel->getAll($estado);
 
         // 5. Pasar a la vista
-        require __DIR__ . '/../views/listar.php';
+        //5.1 cargar el layout y el titulo para la vista
+        $title = "Listado de Bodegas";
+        $view = __DIR__ . '/../views/listar.php';
+        require __DIR__ . '/../views/layout.php';
     }
 
 
     public function crear()
     {
-
+        // 1. Conexión
         $conexion = new ConexionBD();
         $db = $conexion->getConexion();
-
+        // 2. Modelos
         $bodegaModel = new Bodega($db);
         $encargadoModel = new Encargado($db);
 
-        // Si viene POST → guardar
+        // Si viene POST guardar
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+            // obtener los datos del formulario
             $bodega = [
                 'codigo' => $_POST['codigo'],
                 'nombre' => $_POST['nombre'],
                 'direccion' => $_POST['direccion'],
                 'dotacion' => $_POST['dotacion']
             ];
-
+            // obtener encargados seleccionados
             $encargados = $_POST['encargados'] ?? [];
 
             try {
+                // crear la bodega y asignar encargados
                 $bodegaModel->create($bodega, $encargados);
-
-                header('Location: /bodega-app/index.php');
+                //dirigir al listado con mensaje de éxito
+                header('Location: /bodega-app/index.php?success=1');
                 exit;
             } catch (PDOException $e) {
 
@@ -72,7 +77,10 @@ class BodegaController
 
                 $encargados = $encargadoModel->getAll();
 
-                require __DIR__ . '/../views/crear.php';
+                // cargar el layout y el titulo para la vista
+                $title = "Crear Bodega";
+                $view = __DIR__ . '/../views/crear.php';
+                require __DIR__ . '/../views/layout.php';
                 exit;
             }
         }
@@ -80,21 +88,26 @@ class BodegaController
         // Si no es POST → mostrar formulario
         $encargados = $encargadoModel->getAll();
 
-        require __DIR__ . '/../views/crear.php';
+
+        // cargar el layout y el titulo para la vista
+        $title = "Crear Bodega";
+        $view = __DIR__ . '/../views/crear.php';
+        require __DIR__ . '/../views/layout.php';
     }
 
 
     public function editar($id)
     {
-
+        // 1. Conexión
         $conexion = new ConexionBD();
         $db = $conexion->getConexion();
-
+        // 2. Modelos
         $bodegaModel = new Bodega($db);
         $encargadoModel = new Encargado($db);
 
+        // Si viene POST guardar
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
+            // obtener los datos del formulario
             $bodega = [
                 'codigo' => $_POST['codigo'],
                 'nombre' => $_POST['nombre'],
@@ -107,17 +120,16 @@ class BodegaController
 
             try {
 
-                // 🔥 AQUÍ SE EJECUTA EL UPDATE
+                // actualizar la bodega y asignar encargados
                 $bodegaModel->update($id, $bodega, $encargados);
-
-                header('Location: /bodega-app/index.php');
+                // dirigir al listado con mensaje de éxito
+                header('Location: /bodega-app/index.php?success=2');
                 exit;
             } catch (PDOException $e) {
-
-                // 🔥 👉 ESTE BLOQUE VA AQUÍ
+                // error del tipo de violación de restricción (código duplicado o dotación no válida)
                 if ($e->getCode() == '23505') {
                     $error = "El código ya existe.";
-                } elseif ($e->getCode() == '23514') {
+                } elseif ($e->getCode() == '23514') { // error de restricción CHECK (dotación > 0)
                     $error = "La dotación debe ser mayor a 0.";
                 } else {
                     $error = "Error al actualizar.";
@@ -126,7 +138,10 @@ class BodegaController
                 $encargados = $encargadoModel->getAll();
                 $encargadosAsignados = $_POST['encargados'] ?? [];
 
-                require __DIR__ . '/../views/editar.php';
+                // cargar el layout y el titulo para la vista
+                $title = "Editar Bodega";
+                $view = __DIR__ . '/../views/editar.php';
+                require __DIR__ . '/../views/layout.php';
                 exit;
             }
         }
@@ -136,25 +151,30 @@ class BodegaController
         $encargados = $encargadoModel->getAll();
         $encargadosAsignados = $bodegaModel->getEncargadosByBodega($id);
 
-        require __DIR__ . '/../views/editar.php';
+
+        // cargar el layout y el titulo para la vista
+        $title = "Listado de Bodegas";
+        $view = __DIR__ . '/../views/editar.php';
+        require __DIR__ . '/../views/layout.php';
     }
 
 
     public function eliminar($id)
     {
-
+        // 1. Conexión
         $conexion = new ConexionBD();
         $db = $conexion->getConexion();
-
+        // 2. Modelo
         $bodegaModel = new Bodega($db);
-
+        // 3. Eliminar
         try {
             $bodegaModel->delete($id);
         } catch (Exception $e) {
-            // opcional: manejar error
+            header('Location: /bodega-app/index.php?error=1');
+            exit;
         }
-
-        header('Location: /bodega-app/index.php');
+        // 4. Redirigir al listado con mensaje de éxito
+        header('Location: /bodega-app/index.php?success=3');
         exit;
     }
 }

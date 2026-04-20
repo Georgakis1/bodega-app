@@ -1,52 +1,79 @@
-<!DOCTYPE html>
-<html lang="es">
+<?php if (isset($_GET['success'])): ?>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Listado de Bodegas</title>
-</head>
+    <div class="alert alert-success">
 
-<body>
+        <?php if ($_GET['success'] == 1): ?>
+            Bodega creada correctamente
+        <?php elseif ($_GET['success'] == 2): ?>
+            Bodega actualizada correctamente
+        <?php elseif ($_GET['success'] == 3): ?>
+            Bodega eliminada correctamente
+        <?php endif; ?>
 
-    <h1>Listado de Bodegas</h1>
+    </div>
 
-    <!-- Filtro básico -->
-    <form method="GET">
-        <label>Estado:</label>
-        <select name="estado">
-            <option value="">Todas</option>
-            <option value="1">Activadas</option>
-            <option value="0">Desactivadas</option>
-        </select>
-        <button type="submit">Filtrar</button>
-    </form>
+<?php endif; ?>
+<?php if (isset($_GET['error'])): ?>
 
-    <hr>
+    <div class="alert alert-danger">
+        Ocurrió un error al procesar la solicitud
+    </div>
 
-    <?php if (empty($bodegas)): ?>
-        <p>No hay bodegas</p>
-    <?php else: ?>
+<?php endif; ?>
+
+
+
+<h1 class="mb-4">Listado de Bodegas</h1>
+
+<form method="GET" class="mb-3">
+    <select name="estado" class="form-select w-auto d-inline">
+        <option value="">Todas</option>
+        <option value="1">Activadas</option>
+        <option value="0">Desactivadas</option>
+    </select>
+    <button class="btn btn-primary">Filtrar</button>
+</form>
+
+<a href="index.php?accion=crear" class="btn btn-success mb-3">Crear Bodega</a>
+
+<table class="table table-striped table-bordered">
+    <thead class="table-dark">
+        <tr>
+            <th>Código</th>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Dotación</th>
+            <th>Encargados</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
 
         <?php foreach ($bodegas as $bodega): ?>
-            <div style="margin-bottom: 20px; border:1px solid #ccc; padding:10px;">
-                <strong>Código:</strong> <?= $bodega['codigo'] ?> <br>
-                <strong>Nombre:</strong> <?= $bodega['nombre'] ?> <br>
-                <strong>Dirección:</strong> <?= $bodega['direccion'] ?> <br>
-                <strong>Dotación:</strong> <?= $bodega['dotacion'] ?> <br>
-                <strong>Encargados:</strong> <?= $bodega['encargados'] ?> <br>
-                <strong>Fecha creación:</strong> <?= $bodega['created_at'] ?> <br>
-                <strong>Estado:</strong> <?= $bodega['estado'] ? 'Activada' : 'Desactivada' ?> <br>
-                <a href="/bodega-app/index.php?accion=editar&id=<?= $bodega['id'] ?>">Editar</a>
-                <a
-                    href="/bodega-app/index.php?accion=eliminar&id=<?= $bodega['id'] ?>"
-                    onclick="return confirm('¿Seguro que deseas eliminar esta bodega? Esta acción no se puede deshacer.')">
-                    Eliminar
-                </a>
-            </div>
+            <tr>
+                <td><?= $bodega['codigo'] ?></td>
+                <td><?= $bodega['nombre'] ?></td>
+                <td><?= $bodega['direccion'] ?></td>
+                <td><?= $bodega['dotacion'] ?></td>
+                <td><?= $bodega['encargados'] ?></td>
+                <td>
+                    <span class="badge <?= $bodega['estado'] ? 'bg-success' : 'bg-danger' ?>">
+                        <?= $bodega['estado'] ? 'Activa' : 'Inactiva' ?>
+                    </span>
+                </td>
+                <td>
+                    <a href="index.php?accion=editar&id=<?= $bodega['id'] ?>" class="btn btn-warning btn-sm">Editar</a>
+
+                    <a
+                        href="index.php?accion=eliminar&id=<?= $bodega['id'] ?>"
+                        class="btn btn-danger btn-sm"
+                        onclick="return confirm('¿Eliminar esta bodega?')">
+                        Eliminar
+                    </a>
+                </td>
+            </tr>
         <?php endforeach; ?>
 
-    <?php endif; ?>
-
-</body>
-
-</html>
+    </tbody>
+</table>

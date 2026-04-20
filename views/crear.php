@@ -1,34 +1,57 @@
-<!DOCTYPE html>
-<html lang="es">
+<h1 class="mb-4">Crear Bodega</h1>
 
-<head>
-    <meta charset="UTF-8">
-    <title>Crear Bodega</title>
-</head>
+<?php if (!empty($error)): ?>
+    <div class="alert alert-danger">
+        <?= $error ?>
+    </div>
+<?php endif; ?>
 
-<body>
+<form method="POST" class="card p-4 shadow-sm">
 
-    <h1>Crear Bodega</h1>
+    <div class="mb-3">
+        <label class="form-label">Código</label>
+        <input
+            type="text"
+            name="codigo"
+            maxlength="5"
+            required
+            class="form-control"
+            value="<?= $_POST['codigo'] ?? '' ?>">
+    </div>
 
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input
+            type="text"
+            name="nombre"
+            required
+            class="form-control"
+            value="<?= $_POST['nombre'] ?? '' ?>">
+    </div>
 
-    <?php if (!empty($error)): ?>
-        <p style="color:red;"><?= $error ?></p>
-    <?php endif; ?>
-    <form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Dirección</label>
+        <input
+            required
+            type="text"
+            name="direccion"
+            class="form-control"
+            value="<?= $_POST['direccion'] ?? '' ?>">
+    </div>
 
-        <label>Código:</label><br>
-        <input type="text" name="codigo" maxlength="5" required value="<?= $_POST['codigo'] ?? '' ?>"><br><br>
+    <div class="mb-3">
+        <label class="form-label">Dotación</label>
+        <input
+            type="number"
+            name="dotacion"
+            min="1"
+            required
+            class="form-control"
+            value="<?= $_POST['dotacion'] ?? '' ?>">
+    </div>
 
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" required value="<?= $_POST['nombre'] ?? '' ?>"><br><br>
-
-        <label>Dirección:</label><br>
-        <input type="text" name="direccion" value="<?= $_POST['direccion'] ?? '' ?>"><br><br>
-
-        <label>Dotación:</label><br>
-        <input type="number" name="dotacion" min="1" required value="<?= $_POST['dotacion'] ?? '' ?>"><br><br>
-
-        <label>Encargados:</label><br>
+    <div class="mb-3">
+        <label class="form-label">Encargados</label>
 
         <?php
         $encargadosSeleccionados = $_POST['encargados'] ?? [];
@@ -36,25 +59,25 @@
 
         <?php foreach ($encargados as $e): ?>
 
-            <input
-                type="checkbox"
-                name="encargados[]"
-                value="<?= $e['id'] ?>"
-                <?= in_array($e['id'], $encargadosSeleccionados) ? 'checked' : '' ?>>
+            <div class="form-check">
+                <input
+                    class="form-check-input"
+                    type="checkbox"
+                    name="encargados[]"
+                    value="<?= $e['id'] ?>"
+                    <?= in_array($e['id'], $encargadosSeleccionados) ? 'checked' : '' ?>>
 
-            <?= trim($e['nombre'] . ' ' . $e['apellido1'] . ' ' . $e['apellido2']) ?>
-            <br>
+                <label class="form-check-label">
+                    <?= trim($e['nombre'] . ' ' . $e['apellido1'] . ' ' . $e['apellido2']) ?>
+                </label>
+            </div>
 
         <?php endforeach; ?>
+    </div>
 
-        <br>
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-success">Guardar</button>
+        <a href="/bodega-app/index.php" class="btn btn-secondary">Volver</a>
+    </div>
 
-        <button type="submit">Guardar</button>
-    </form>
-
-    <br>
-    <a href="/bodega-app/index.php">Volver</a>
-
-</body>
-
-</html>
+</form>

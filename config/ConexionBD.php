@@ -8,6 +8,7 @@ class ConexionBD
     {
         if (self::$conexion === null) {
 
+            // cargar variables de entorno
             $env = parse_ini_file(__DIR__ . '/../.env');
 
             $host = $env['DB_HOST'];
@@ -17,6 +18,7 @@ class ConexionBD
             $pass = $env['DB_PASS'];
 
             try {
+                // crear conexión
                 self::$conexion = new PDO(
                     "pgsql:host=$host;port=$port;dbname=$dbname",
                     $user,

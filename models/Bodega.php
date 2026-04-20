@@ -12,6 +12,7 @@ class Bodega
     // Obtener todas con encargados
     public function getAll($estado = null)
     {
+        //preparamos la consulta para traer las bodegas con sus encargados concatenados
         $sql = "
             SELECT 
                 b.id,
@@ -96,6 +97,7 @@ class Bodega
 
     public function getById($id)
     {
+        // obtener una bodega por su id
         $stmt = $this->db->prepare("SELECT * FROM bodegas WHERE id = :id");
         $stmt->execute([':id' => $id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
@@ -104,6 +106,7 @@ class Bodega
 
     public function getEncargadosByBodega($id)
     {
+        // obtener los ids de los encargados asignados a una bodega
         $stmt = $this->db->prepare("
             SELECT encargado_id 
             FROM bodega_encargado 
@@ -166,7 +169,7 @@ class Bodega
 
     public function delete($id)
     {
-
+        // eliminar una bodega por su id
         $stmt = $this->db->prepare("DELETE FROM bodegas WHERE id = :id");
         $stmt->execute([':id' => $id]);
     }
